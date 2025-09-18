@@ -1,0 +1,70 @@
+<!-- File: templates/video-call.html (COMPLETE UPDATED CODE) -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advocate Video Call</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/video.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="video-call-wrapper">
+        <!-- Remote Video (Fullscreen) -->
+        <video id="remote-video" class="remote-video" autoplay playsinline></video>
+
+        <!-- Self Video (Picture-in-Picture) -->
+        <div id="self-video-container" class="self-video-container">
+            <video id="local-video" class="local-video" autoplay muted playsinline></video>
+        </div>
+
+        <!-- Call Information Overlay -->
+        <div class="call-info-overlay">
+            <div class="participant-info">
+                <i class="fas fa-user-tie"></i>
+                <!-- ✅ Advocate ka naam yahan dynamically update hoga -->
+                <span id="advocate-name">Advocate</span>
+            </div>
+            <div class="call-timer">
+                <span id="call-timer-display">00:00</span>
+            </div>
+        </div>
+
+        <!-- Waiting/Connecting Overlay -->
+        <div id="status-overlay" class="status-overlay">
+            <div class="status-content">
+                <div class="avatar-ring">
+                    <i class="fas fa-user-tie fa-3x"></i>
+                </div>
+                <h2 id="status-text">Connecting...</h2>
+                <p id="status-subtext">Please wait while we connect you.</p>
+                <div class="loading-dots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="video-controls-container">
+            <button id="toggle-camera-btn" class="control-btn" title="Toggle Camera">
+                <i class="fas fa-video"></i>
+            </button>
+            <button id="toggle-mic-btn" class="control-btn" title="Toggle Mic">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button id="end-call-btn" class="control-btn end-call" title="End Call">
+                <i class="fas fa-phone-slash"></i>
+            </button>
+            <button id="flip-camera-btn" class="control-btn" title="Flip Camera">
+                <i class="fas fa-camera-rotate"></i>
+            </button>
+            <button id="share-screen-btn" class="control-btn" title="Share Screen">
+                <i class="fas fa-desktop"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/video.js') }}"></script>
+</body>
+</html>

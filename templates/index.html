@@ -18,29 +18,8 @@
 
     <div class="advocates-grid">
         <h2>Select an Advocate by Specialty</h2>
-        <div class="grid">
-            {% for advocate in advocates %}
-            <div class="advocate-card" data-advocate-id="{{ advocate.id }}">
-                <div class="advocate-header">
-                    <div class="advocate-avatar">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    <div class="status-indicator {% if advocate.available %}online{% else %}offline{% endif %}"></div>
-                </div>
-                <div class="advocate-info">
-                    <h3>{{ advocate.name }}</h3>
-                    <p class="specialty">{{ advocate.specialty }}</p>
-                    <p class="experience">{{ advocate.experience }} experience</p>
-                    <div class="rating">
-                        <i class="fas fa-star"></i>
-                        <span>{{ advocate.rating }}</span>
-                    </div>
-                </div>
-                <button class="chat-btn" onclick="startChat('{{ advocate.id }}')">
-                    <i class="fas fa-comments"></i> Start Chat
-                </button>
-            </div>
-            {% endfor %}
+        <div class="grid" id="advocates-grid">
+            <!-- Advocates will be loaded here by JavaScript -->
         </div>
     </div>
 </div>
@@ -48,6 +27,52 @@
 
 {% block scripts %}
 <script>
+let advocatesData = [];
+
+async function loadAdvocates() {
+    try {
+        const response = await fetch('/api/advocates');
+        const data = await response.json();
+        advocatesData = data.advocates;
+        displayAdvocates();
+    } catch (error) {
+        console.error('Error loading advocates:', error);
+    }
+}
+
+function displayAdvocates() {
+    const grid = document.getElementById('advocates-grid');
+    grid.innerHTML = '';
+    
+    advocatesData.forEach(advocate => {
+        const card = document.createElement('div');
+        card.className = 'advocate-card';
+        card.innerHTML = `
+            <div class="advocate-header">
+                <div class="advocate-avatar">
+                    <i class="${advocate.avatar}"></i>
+                </div>
+                <div class="status-indicator ${advocate.available ? 'online' : 'offline'}"></div>
+            </div>
+            <div class="advocate-info">
+                <h3>${advocate.name}</h3>
+                <p class="specialty">${advocate.specialty}</p>
+                <p class="experience">${advocate.experience} experience</p>
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <span>${advocate.rating}</span>
+                </div>
+            </div>
+            <button class="chat-btn" onclick="startChat('${advocate.id}')" 
+                    ${!advocate.available ? 'disabled' : ''}>
+                <i class="fas fa-comments"></i> 
+                ${advocate.available ? 'Start Chat' : 'Unavailable'}
+            </button>
+        `;
+        grid.appendChild(card);
+    });
+}
+
 function startChat(advocateId) {
     const clientName = document.getElementById('client-name').value.trim();
     
@@ -56,7 +81,14 @@ function startChat(advocateId) {
         return;
     }
     
-    window.location.href = `/chat/${advocateId}?client_name=${encodeURIComponent(clientName)}`;
+    // Save client name to localStorage
+    localStorage.setItem('clientName', clientName);
+    
+    // Navigate to chat
+    window.location.href = `/chat?advocate=${advocateId}`;
 }
+
+// Load advocates on page load
+window.addEventListener('DOMContentLoaded', loadAdvocates);
 </script>
 {% endblock %}
