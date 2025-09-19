@@ -21,8 +21,8 @@ A modern, real-time legal consultation platform connecting clients with advocate
 
 | Category      | Technology                                                                                                          |
 | :------------ | :------------------------------------------------------------------------------------------------------------------ |
-| **Backend**   | ![Python](https://   |
-| **Frontend**  |  ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor    |
+| **Backend**   | [Python]   |
+| **Frontend**  |  [CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor    |
 | **APIs**      | **WebRTC** (for video), **localStorage** (for storage)                                                              |
 | **Styling**   | **Font Awesome** (for icons)                                                                                        |
 
