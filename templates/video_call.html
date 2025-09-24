@@ -1,0 +1,1241 @@
+{% extends "base.html" %}
+
+{% block title %}Video Consultation - Room {{ room_id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body { 
+        background: linear-gradient(135deg, #0f0f0f, #1a1a1a); 
+        margin: 0; 
+        padding: 0; 
+        height: 100vh; 
+        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .video-call-container {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        background: linear-gradient(135deg, #0a0a0a, #1e1e1e);
+        color: white;
+    }
+
+    /* ===== TOP BAR ===== */
+    .call-header {
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 20;
+    }
+
+    .call-info-panel {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .legal-branding {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .brand-logo {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .brand-info h3 {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .brand-info p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    .session-details {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 12px 20px;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .call-timer {
+        font-size: 1.6rem;
+        font-family: 'SF Mono', monospace;
+        color: #4CAF50;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .participants-count {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .header-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 10px 18px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .share-btn {
+        background: rgba(33, 150, 243, 0.2);
+        border-color: rgba(33, 150, 243, 0.4);
+    }
+
+    .close-btn {
+        background: rgba(244, 67, 54, 0.2);
+        border-color: rgba(244, 67, 54, 0.4);
+        padding: 10px;
+        width: 40px;
+        justify-content: center;
+    }
+
+    /* ===== MAIN VIDEO AREA ===== */
+    .main-video-section {
+        flex: 1;
+        position: relative;
+        display: flex;
+        background: #000;
+        overflow: hidden;
+    }
+
+    .primary-video-container {
+        flex: 1;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+    }
+
+    #main-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0;
+    }
+
+    .video-overlay {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 12px 18px;
+        border-radius: 12px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .speaker-name {
+        color: white;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+    }
+
+    .speaker-role {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.8rem;
+    }
+
+    /* ===== WELCOME SCREEN ===== */
+    .welcome-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        backdrop-filter: blur(20px);
+    }
+
+    .welcome-content {
+        text-align: center;
+        max-width: 600px;
+        padding: 50px;
+    }
+
+    .welcome-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+        font-size: 3rem;
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .welcome-content h2 {
+        font-size: 2.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: white;
+    }
+
+    .welcome-content p {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    .room-info-card {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 25px;
+        border-radius: 20px;
+        margin: 30px 0;
+        backdrop-filter: blur(15px);
+    }
+
+    .room-info-card h4 {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .room-link {
+        background: rgba(0, 0, 0, 0.4);
+        padding: 15px;
+        border-radius: 12px;
+        font-family: 'SF Mono', monospace;
+        word-break: break-all;
+        margin: 15px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .room-link:hover {
+        background: rgba(0, 0, 0, 0.6);
+        border-color: rgba(255, 255, 255, 0.4);
+        transform: translateY(-2px);
+    }
+
+    .join-call-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 18px 40px;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .join-call-btn:hover {
+        background: linear-gradient(135deg, #764ba2, #667eea);
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.5);
+    }
+
+    .preparation-tips {
+        margin-top: 25px;
+        text-align: left;
+    }
+
+    .preparation-tips h5 {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .tips-list {
+        display: grid;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+    }
+
+    .tips-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .tips-list li::before {
+        content: '✓';
+        color: #4CAF50;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    /* ===== PARTICIPANTS SIDEBAR ===== */
+    .participants-sidebar {
+        width: 320px;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(20px);
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        z-index: 15;
+    }
+
+    .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-header h4 {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sidebar-subtitle {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.85rem;
+    }
+
+    .participants-list {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+    }
+
+    .participants-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .participants-list::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+
+    .participants-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+    }
+
+    .participant-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 12px;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .participant-card:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(102, 126, 234, 0.5);
+        transform: translateY(-2px);
+    }
+
+    .participant-card.local {
+        border-color: rgba(76, 175, 80, 0.5);
+        background: rgba(76, 175, 80, 0.1);
+    }
+
+    .participant-card.speaking {
+        border-color: rgba(255, 193, 7, 0.7);
+        background: rgba(255, 193, 7, 0.1);
+        box-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
+    }
+
+    .participant-video {
+        width: 100%;
+        height: 180px;
+        border-radius: 12px;
+        background: #333;
+        margin-bottom: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .participant-video video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .video-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #333, #555);
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 2rem;
+    }
+
+    .participant-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .participant-details h5 {
+        color: white;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .participant-status {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #4CAF50;
+        animation: pulse 2s infinite;
+    }
+
+    .participant-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-icon {
+        width: 28px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+    }
+
+    .action-icon:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .action-icon.muted {
+        background: rgba(244, 67, 54, 0.3);
+        border-color: rgba(244, 67, 54, 0.5);
+        color: #f44336;
+    }
+
+    /* ===== BOTTOM CONTROLS ===== */
+    .call-controls {
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        z-index: 20;
+    }
+
+    .control-group {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .control-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 1.4rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(15px);
+        position: relative;
+    }
+
+    .control-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .control-btn.active {
+        background: rgba(76, 175, 80, 0.3);
+        border-color: #4CAF50;
+        box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+    }
+
+    .control-btn.muted,
+    .control-btn.video-off {
+        background: rgba(244, 67, 54, 0.3);
+        border-color: #f44336;
+        box-shadow: 0 0 20px rgba(244, 67, 54, 0.4);
+    }
+
+    .control-btn.screen-sharing {
+        background: rgba(33, 150, 243, 0.3);
+        border-color: #2196F3;
+        box-shadow: 0 0 20px rgba(33, 150, 243, 0.4);
+    }
+
+    .end-call-btn {
+        background: linear-gradient(135deg, #f44336, #d32f2f);
+        border-color: #f44336;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        font-size: 1.6rem;
+    }
+
+    .end-call-btn:hover {
+        background: linear-gradient(135deg, #d32f2f, #c62828);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 15px 35px rgba(244, 67, 54, 0.5);
+    }
+
+    .control-tooltip {
+        position: absolute;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        z-index: 25;
+    }
+
+    .control-btn:hover .control-tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-5px);
+    }
+
+    /* ===== CONNECTION STATUS ===== */
+    .connection-indicator {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 12px 18px;
+        border-radius: 12px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        z-index: 15;
+    }
+
+    .connection-indicator.good {
+        border-color: rgba(76, 175, 80, 0.5);
+        color: #4CAF50;
+    }
+
+    .connection-indicator.fair {
+        border-color: rgba(255, 152, 0, 0.5);
+        color: #FF9800;
+    }
+
+    .connection-indicator.poor {
+        border-color: rgba(244, 67, 54, 0.5);
+        color: #f44336;
+    }
+
+    .signal-bars {
+        display: flex;
+        gap: 2px;
+        align-items: flex-end;
+    }
+
+    .signal-bar {
+        width: 3px;
+        background: currentColor;
+        border-radius: 2px;
+    }
+
+    .signal-bar:nth-child(1) { height: 6px; }
+    .signal-bar:nth-child(2) { height: 10px; }
+    .signal-bar:nth-child(3) { height: 14px; }
+    .signal-bar:nth-child(4) { height: 18px; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+        .participants-sidebar {
+            width: 280px;
+        }
+        
+        .participant-video {
+            height: 140px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .call-header {
+            padding: 15px 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .call-info-panel {
+            gap: 15px;
+        }
+        
+        .participants-sidebar {
+            position: absolute;
+            right: -320px;
+            top: 0;
+            bottom: 0;
+            transition: right 0.3s ease;
+            z-index: 30;
+        }
+        
+        .participants-sidebar.open {
+            right: 0;
+        }
+        
+        .mobile-participants-toggle {
+            position: fixed;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 25;
+            backdrop-filter: blur(15px);
+        }
+        
+        .call-controls {
+            padding: 20px;
+            gap: 15px;
+        }
+        
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+        }
+        
+        .end-call-btn {
+            width: 60px;
+            height: 60px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .welcome-content {
+            padding: 30px 20px;
+        }
+        
+        .welcome-content h2 {
+            font-size: 1.8rem;
+        }
+        
+        .room-info-card {
+            padding: 20px;
+        }
+        
+        .call-controls {
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            gap: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="video-call-container">
+    <!-- Top Header Bar -->
+    <div class="call-header">
+        <div class="call-info-panel">
+            <div class="legal-branding">
+                <div class="brand-logo">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <div class="brand-info">
+                    <h3>Legal Consultation</h3>
+                    <p>Secure & Confidential</p>
+                </div>
+            </div>
+            
+            <div class="session-details">
+                <div class="call-timer" id="call-timer">00:00</div>
+                <div class="participants-count" id="participants-count">
+                    <i class="fas fa-users"></i>
+                    <span>0 participants</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-actions">
+            <button class="header-btn share-btn" onclick="shareRoom()" title="Share Room">
+                <i class="fas fa-share-alt"></i>
+                <span>Share</span>
+            </button>
+            <button class="header-btn" onclick="toggleSidebar()" title="Toggle Participants">
+                <i class="fas fa-users"></i>
+            </button>
+            <button class="header-btn close-btn" onclick="endCall()" title="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Video Section -->
+    <div class="main-video-section">
+        <div class="primary-video-container">
+            <video id="main-video" autoplay playsinline muted></video>
+            
+            <div class="video-overlay" id="video-overlay" style="display: none;">
+                <div class="speaker-name" id="speaker-name">You</div>
+                <div class="speaker-role" id="speaker-role">Local Camera</div>
+            </div>
+            
+            <!-- Welcome Screen -->
+            <div class="welcome-screen" id="welcome-screen">
+                <div class="welcome-content">
+                    <div class="welcome-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h2>Professional Legal Video Consultation</h2>
+                    <p>Secure, encrypted video calls for confidential legal discussions</p>
+                    
+                    <div class="room-info-card">
+                        <h4><i class="fas fa-link"></i> Share Meeting Room</h4>
+                        <div class="room-link" onclick="copyRoomLink()" id="room-link">
+                            {{ request.url }}
+                        </div>
+                        <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem;">
+                            <i class="fas fa-info-circle"></i> Click to copy • Share with others to join
+                        </small>
+                    </div>
+                    
+                    <button class="join-call-btn" onclick="startCall()" id="join-btn">
+                        <i class="fas fa-video"></i>
+                        Join Video Consultation
+                    </button>
+                    
+                    <div class="preparation-tips">
+                        <h5>Before joining:</h5>
+                        <ul class="tips-list">
+                            <li>Ensure stable internet connection</li>
+                            <li>Test your camera and microphone</li>
+                            <li>Prepare relevant documents</li>
+                            <li>Find a quiet, private space</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Participants Sidebar -->
+        <div class="participants-sidebar" id="participants-sidebar">
+            <div class="sidebar-header">
+                <h4><i class="fas fa-users"></i> Participants</h4>
+                <div class="sidebar-subtitle">In this consultation</div>
+            </div>
+            
+            <div class="participants-list" id="participants-list">
+                <!-- Participants will be added dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="call-controls" id="call-controls" style="display: none;">
+        <div class="control-group">
+            <button id="toggle-mic" class="control-btn" onclick="toggleMicrophone()">
+                <i class="fas fa-microphone"></i>
+                <div class="control-tooltip">Toggle Microphone</div>
+            </button>
+            
+            <button id="toggle-video" class="control-btn" onclick="toggleCamera()">
+                <i class="fas fa-video"></i>
+                <div class="control-tooltip">Toggle Camera</div>
+            </button>
+        </div>
+        
+        <div class="control-group">
+            <button id="share-screen" class="control-btn" onclick="shareScreen()">
+                <i class="fas fa-desktop"></i>
+                <div class="control-tooltip">Share Screen</div>
+            </button>
+            
+            <button id="toggle-chat" class="control-btn" onclick="toggleChat()">
+                <i class="fas fa-comment"></i>
+                <div class="control-tooltip">Toggle Chat</div>
+            </button>
+        </div>
+        
+        <button id="end-call" class="control-btn end-call-btn" onclick="endCall()">
+            <i class="fas fa-phone-slash"></i>
+            <div class="control-tooltip">End Call</div>
+        </button>
+    </div>
+
+    <!-- Connection Indicator -->
+    <div class="connection-indicator good" id="connection-status">
+        <div class="signal-bars">
+            <div class="signal-bar"></div>
+            <div class="signal-bar"></div>
+            <div class="signal-bar"></div>
+            <div class="signal-bar"></div>
+        </div>
+        <span>Excellent Connection</span>
+    </div>
+
+    <!-- Mobile Participants Toggle -->
+    <button class="mobile-participants-toggle" onclick="toggleSidebar()" style="display: none;">
+        <i class="fas fa-users"></i>
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/webrtc.js') }}"></script>
+<script>
+    const roomId = '{{ room_id }}';
+    const userId = '{{ user_id }}';
+    const userName = localStorage.getItem('clientName') || 'Anonymous';
+    
+    let webrtcManager = null;
+    let sidebarOpen = true;
+
+    // Initialize when page loads
+    window.addEventListener('DOMContentLoaded', () => {
+        console.log(`🎥 Professional video consultation loading: ${roomId}`);
+        
+        // Update room link
+        document.getElementById('room-link').textContent = window.location.href;
+        
+        // Initialize WebRTC manager
+        webrtcManager = new WebRTCManager(roomId, userId, userName);
+        
+        // Setup responsive behavior
+        handleResponsiveLayout();
+        
+        console.log(`✅ Video consultation ready for ${userName}`);
+    });
+
+    // Enhanced UI Functions
+    function startCall() {
+        if (webrtcManager) {
+            const joinBtn = document.getElementById('join-btn');
+            joinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+            joinBtn.disabled = true;
+            
+            webrtcManager.startCall();
+        } else {
+            showNotification('Video system not initialized', 'error');
+        }
+    }
+
+    function showCallInterface() {
+        document.getElementById('welcome-screen').style.display = 'none';
+        document.getElementById('call-controls').style.display = 'flex';
+        document.getElementById('video-overlay').style.display = 'block';
+        
+        // Start connection quality monitoring
+        startConnectionMonitoring();
+        
+        console.log('🎛️ Professional call interface activated');
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('participants-sidebar');
+        sidebarOpen = !sidebarOpen;
+        
+        if (window.innerWidth <= 768) {
+            sidebar.classList.toggle('open');
+        } else {
+            sidebar.style.display = sidebarOpen ? 'flex' : 'none';
+        }
+    }
+
+    function shareRoom() {
+        const roomLink = window.location.href;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: 'Legal Video Consultation',
+                text: 'Join my legal video consultation',
+                url: roomLink
+            }).then(() => {
+                showNotification('Room link shared successfully', 'success');
+            }).catch(() => {
+                copyRoomLink();
+            });
+        } else {
+            copyRoomLink();
+        }
+    }
+
+    function copyRoomLink() {
+        const link = document.getElementById('room-link').textContent;
+        
+        navigator.clipboard.writeText(link).then(() => {
+            showNotification('Room link copied to clipboard!', 'success');
+            
+            // Visual feedback
+            const linkEl = document.getElementById('room-link');
+            const originalBg = linkEl.style.background;
+            linkEl.style.background = 'rgba(76, 175, 80, 0.3)';
+            linkEl.style.transform = 'scale(1.02)';
+            
+            setTimeout(() => {
+                linkEl.style.background = originalBg;
+                linkEl.style.transform = 'scale(1)';
+            }, 1000);
+        }).catch(() => {
+            showNotification('Failed to copy link', 'error');
+        });
+    }
+
+    // Enhanced control functions
+    function toggleMicrophone() {
+        if (webrtcManager) {
+            webrtcManager.toggleMicrophone();
+            
+            const btn = document.getElementById('toggle-mic');
+            const isMuted = btn.classList.contains('muted');
+            
+            if (isMuted) {
+                btn.classList.remove('muted');
+                btn.innerHTML = '<i class="fas fa-microphone"></i>';
+                updateParticipantStatus('audio', true);
+            } else {
+                btn.classList.add('muted');
+                btn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                updateParticipantStatus('audio', false);
+            }
+        }
+    }
+
+    function toggleCamera() {
+        if (webrtcManager) {
+            webrtcManager.toggleCamera();
+            
+            const btn = document.getElementById('toggle-video');
+            const isVideoOff = btn.classList.contains('video-off');
+            
+            if (isVideoOff) {
+                btn.classList.remove('video-off');
+                btn.innerHTML = '<i class="fas fa-video"></i>';
+                updateParticipantStatus('video', true);
+            } else {
+                btn.classList.add('video-off');
+                btn.innerHTML = '<i class="fas fa-video-slash"></i>';
+                updateParticipantStatus('video', false);
+            }
+        }
+    }
+
+    function shareScreen() {
+        if (webrtcManager) {
+            const btn = document.getElementById('share-screen');
+            const isSharing = btn.classList.contains('screen-sharing');
+            
+            if (isSharing) {
+                webrtcManager.stopScreenShare();
+                btn.classList.remove('screen-sharing');
+                btn.innerHTML = '<i class="fas fa-desktop"></i>';
+                showNotification('Screen sharing stopped', 'info');
+            } else {
+                webrtcManager.shareScreen();
+                btn.classList.add('screen-sharing');
+                btn.innerHTML = '<i class="fas fa-desktop"></i>';
+                showNotification('Screen sharing started', 'success');
+            }
+        }
+    }
+
+    function toggleChat() {
+        // Placeholder for chat functionality
+        showNotification('Chat panel coming soon!', 'info');
+    }
+
+    function endCall() {
+        if (confirm('Are you sure you want to end this consultation?')) {
+            if (webrtcManager) {
+                webrtcManager.endCall();
+            }
+            
+            showNotification('Consultation ended', 'info');
+            
+            setTimeout(() => {
+                window.close() || (window.location.href = '/');
+            }, 2000);
+        }
+    }
+
+    // Participant management
+    function addParticipant(userId, username, isLocal = false) {
+        const participantsList = document.getElementById('participants-list');
+        
+        const participantCard = document.createElement('div');
+        participantCard.className = `participant-card ${isLocal ? 'local' : 'remote'}`;
+        participantCard.id = `participant-${userId}`;
+        
+        participantCard.innerHTML = `
+            <div class="participant-video">
+                <video autoplay playsinline ${isLocal ? 'muted' : ''}></video>
+                <div class="video-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            <div class="participant-info">
+                <div class="participant-details">
+                    <h5>${username} ${isLocal ? '(You)' : ''}</h5>
+                    <div class="participant-status">
+                        <div class="status-dot"></div>
+                        <span>Connected</span>
+                    </div>
+                </div>
+                <div class="participant-actions">
+                    <div class="action-icon" title="Audio">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <div class="action-icon" title="Video">
+                        <i class="fas fa-video"></i>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        participantsList.appendChild(participantCard);
+        
+        // Add click handler to switch main video
+        if (!isLocal) {
+            participantCard.addEventListener('click', () => {
+                const video = participantCard.querySelector('video');
+                if (video.srcObject) {
+                    document.getElementById('main-video').srcObject = video.srcObject;
+                    document.getElementById('speaker-name').textContent = username;
+                    document.getElementById('speaker-role').textContent = 'Participant';
+                }
+            });
+        }
+        
+        console.log(`👤 Participant added: ${username}`);
+    }
+
+    function removeParticipant(userId) {
+        const participantCard = document.getElementById(`participant-${userId}`);
+        if (participantCard) {
+            participantCard.remove();
+            console.log(`👤 Participant removed: ${userId}`);
+        }
+    }
+
+    function updateParticipantStatus(type, enabled) {
+        const localCard = document.querySelector('.participant-card.local');
+        if (localCard) {
+            const actionIcon = localCard.querySelector(`.action-icon [class*="${type === 'audio' ? 'microphone' : 'video'}"]`).parentElement;
+            
+            if (enabled) {
+                actionIcon.classList.remove('muted');
+            } else {
+                actionIcon.classList.add('muted');
+            }
+        }
+    }
+
+    // Connection quality monitoring
+    function startConnectionMonitoring() {
+        setInterval(() => {
+            // Simulate connection quality (replace with real implementation)
+            const quality = Math.random();
+            updateConnectionStatus(quality);
+        }, 5000);
+    }
+
+    function updateConnectionStatus(quality) {
+        const indicator = document.getElementById('connection-status');
+        const text = indicator.querySelector('span');
+        
+        if (quality > 0.8) {
+            indicator.className = 'connection-indicator good';
+            text.textContent = 'Excellent Connection';
+        } else if (quality > 0.6) {
+            indicator.className = 'connection-indicator fair';
+            text.textContent = 'Good Connection';
+        } else {
+            indicator.className = 'connection-indicator poor';
+            text.textContent = 'Poor Connection';
+        }
+    }
+
+    // Responsive layout handling
+    function handleResponsiveLayout() {
+        function checkScreen() {
+            const isMobile = window.innerWidth <= 768;
+            const mobileToggle = document.querySelector('.mobile-participants-toggle');
+            const sidebar = document.getElementById('participants-sidebar');
+            
+            if (isMobile) {
+                mobileToggle.style.display = 'flex';
+                sidebar.classList.remove('open');
+                sidebarOpen = false;
+            } else {
+                mobileToggle.style.display = 'none';
+                sidebar.style.display = 'flex';
+                sidebar.classList.remove('open');
+                sidebarOpen = true;
+            }
+        }
+        
+        checkScreen();
+        window.addEventListener('resize', checkScreen);
+    }
+
+    // Override WebRTC manager callbacks
+    window.onWebRTCReady = function() {
+        showCallInterface();
+    };
+
+    window.onParticipantJoined = function(userId, username) {
+        addParticipant(userId, username, false);
+        showNotification(`${username} joined the consultation`, 'info', 3000);
+    };
+
+    window.onParticipantLeft = function(userId) {
+        removeParticipant(userId);
+    };
+
+    window.onLocalStreamReady = function(stream) {
+        addParticipant(userId, userName, true);
+        const localVideo = document.querySelector('.participant-card.local video');
+        if (localVideo) {
+            localVideo.srcObject = stream;
+        }
+    };
+
+    // Utility functions
+    function showNotification(message, type, duration = 4000) {
+        if (typeof window.ChatUtils !== 'undefined' && window.ChatUtils.showNotification) {
+            window.ChatUtils.showNotification(message, type, duration);
+        } else {
+            console.log(`${type.toUpperCase()}: ${message}`);
+        }
+    }
+
+    // Handle page visibility and cleanup
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            console.log('📱 Video consultation in background');
+        } else {
+            console.log('📱 Video consultation active');
+        }
+    });
+
+    window.addEventListener('beforeunload', function(e) {
+        if (webrtcManager && webrtcManager.isCallActive) {
+            e.preventDefault();
+            e.returnValue = 'Are you sure you want to leave the consultation?';
+        }
+    });
+
+    console.log('✅ Professional video consultation interface ready');
+</script>
+{% endblock %}
