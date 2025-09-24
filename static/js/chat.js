@@ -1,5 +1,5 @@
 // File: static/js/chat.js (FINAL UPDATED AND BUG-FREE CODE)
-
+/*
 class AdvocateChat {
     constructor() {
         this.currentUser = localStorage.getItem('clientName') || 'Client';
@@ -194,3 +194,4 @@ function handleKeyPress(event) {
         sendMessage();
     }
 }
+*/

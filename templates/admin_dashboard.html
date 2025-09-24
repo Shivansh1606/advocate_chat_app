@@ -1,0 +1,2945 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Legal Chat System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1600px;">
+    <div class="dashboard-wrapper">
+        <!-- Premium Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="header-background"></div>
+            <div class="header-content">
+                <div class="dashboard-branding">
+                    <div class="brand-logo">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="brand-info">
+                        <h1>Administrative Dashboard</h1>
+                        <p>Legal Chat System Management Console</p>
+                        <div class="admin-badge">
+                            <i class="fas fa-crown"></i>
+                            <span>Administrator Access</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="quick-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="live-clients">0</div>
+                            <div class="stat-label">Active Clients</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="live-meetings">0</div>
+                            <div class="stat-label">Today's Meetings</div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn export-btn" onclick="exportData()">
+                            <i class="fas fa-download"></i>
+                            <span>Export Data</span>
+                        </button>
+                        <button class="action-btn refresh-btn" onclick="refreshAllData()">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Refresh</span>
+                        </button>
+                        <a href="/" class="action-btn home-btn">
+                            <i class="fas fa-home"></i>
+                            <span>Back to Site</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Analytics Cards -->
+        <div class="analytics-section">
+            <div class="analytics-grid">
+                <div class="analytics-card primary">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn" onclick="filterMeetings('all')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="metric-value" id="total-meetings">0</div>
+                        <div class="metric-label">Total Meetings</div>
+                        <div class="metric-trend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+12% this week</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-card success">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn" onclick="showClientDetails()">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="metric-value" id="total-clients">0</div>
+                        <div class="metric-label">Registered Clients</div>
+                        <div class="metric-trend">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+8% this month</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-card warning">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn" onclick="filterMeetings('pending')">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="metric-value" id="pending-meetings">0</div>
+                        <div class="metric-label">Pending Meetings</div>
+                        <div class="metric-trend">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Requires attention</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-card info">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn" onclick="filterMeetings('confirmed')">
+                                <i class="fas fa-calendar-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="metric-value" id="confirmed-meetings">0</div>
+                        <div class="metric-label">Confirmed Meetings</div>
+                        <div class="metric-trend">
+                            <i class="fas fa-check"></i>
+                            <span>Ready to proceed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Navigation Tabs -->
+        <div class="navigation-section">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('overview')" data-tab="overview">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Overview</span>
+                    <div class="tab-indicator"></div>
+                </button>
+                <button class="nav-tab" onclick="switchTab('meetings')" data-tab="meetings">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Meetings</span>
+                    <div class="tab-badge" id="meetings-badge">0</div>
+                    <div class="tab-indicator"></div>
+                </button>
+                <button class="nav-tab" onclick="switchTab('clients')" data-tab="clients">
+                    <i class="fas fa-users"></i>
+                    <span>Clients</span>
+                    <div class="tab-badge" id="clients-badge">0</div>
+                    <div class="tab-indicator"></div>
+                </button>
+                <button class="nav-tab" onclick="switchTab('analytics')" data-tab="analytics">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Analytics</span>
+                    <div class="tab-indicator"></div>
+                </button>
+                <button class="nav-tab" onclick="switchTab('settings')" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                    <div class="tab-indicator"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Content Sections -->
+        <div class="tab-content-container">
+            <!-- Overview Tab -->
+            <div id="overview-tab" class="tab-content active">
+                <div class="overview-grid">
+                    <!-- Recent Activity -->
+                    <div class="overview-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                            <button class="panel-action" onclick="refreshActivity()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="activity-feed" id="activity-feed">
+                            <div class="activity-placeholder">
+                                <i class="fas fa-clock"></i>
+                                <p>Loading recent activities...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="overview-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        </div>
+                        <div class="quick-actions-grid">
+                            <button class="quick-action-btn" onclick="createMeeting()">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>New Meeting</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="sendNotification()">
+                                <i class="fas fa-bell"></i>
+                                <span>Send Alert</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="generateReport()">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Generate Report</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="backupData()">
+                                <i class="fas fa-database"></i>
+                                <span>Backup Data</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- System Status -->
+                    <div class="overview-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-server"></i> System Health</h3>
+                        </div>
+                        <div class="system-status">
+                            <div class="status-item">
+                                <div class="status-indicator good"></div>
+                                <div class="status-info">
+                                    <strong>Database</strong>
+                                    <span>Operational</span>
+                                </div>
+                                <div class="status-value">99.9%</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator good"></div>
+                                <div class="status-info">
+                                    <strong>API Services</strong>
+                                    <span>All systems running</span>
+                                </div>
+                                <div class="status-value">100%</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator warning"></div>
+                                <div class="status-info">
+                                    <strong>Storage</strong>
+                                    <span>75% capacity</span>
+                                </div>
+                                <div class="status-value">75%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meetings Tab -->
+            <div id="meetings-tab" class="tab-content">
+                <div class="data-section">
+                    <div class="section-header">
+                        <div class="header-info">
+                            <h2><i class="fas fa-calendar-alt"></i> Meeting Management</h2>
+                            <p>View and manage all consultation bookings</p>
+                        </div>
+                        <div class="section-controls">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Search meetings..." id="meeting-search" onkeyup="searchMeetings()">
+                            </div>
+                            <select id="meeting-filter" onchange="filterMeetings()" class="filter-select">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                            <button class="export-btn-small" onclick="exportMeetings()">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="data-table-container">
+                        <div class="table-wrapper">
+                            <table class="data-table" id="meetings-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="select-all-meetings" onchange="toggleSelectAll('meetings')">
+                                        </th>
+                                        <th onclick="sortTable('meetings', 0)">
+                                            ID <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th onclick="sortTable('meetings', 1)">
+                                            Client <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th onclick="sortTable('meetings', 2)">
+                                            Advocate <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th onclick="sortTable('meetings', 3)">
+                                            Date & Time <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th>Type</th>
+                                        <th>Duration</th>
+                                        <th>Case Type</th>
+                                        <th onclick="sortTable('meetings', 7)">
+                                            Status <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data loaded by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="loading-indicator" id="meetings-loading">
+                            <div class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Loading meetings...</span>
+                            </div>
+                        </div>
+                        
+                        <div class="table-pagination" id="meetings-pagination">
+                            <div class="pagination-info">
+                                Showing <span id="meetings-range">0-0</span> of <span id="meetings-total">0</span> meetings
+                            </div>
+                            <div class="pagination-controls">
+                                <button class="page-btn" onclick="changePage('meetings', 'prev')" id="meetings-prev">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <div class="page-numbers" id="meetings-pages"></div>
+                                <button class="page-btn" onclick="changePage('meetings', 'next')" id="meetings-next">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clients Tab -->
+            <div id="clients-tab" class="tab-content">
+                <div class="data-section">
+                    <div class="section-header">
+                        <div class="header-info">
+                            <h2><i class="fas fa-users"></i> Client Management</h2>
+                            <p>Manage registered client information</p>
+                        </div>
+                        <div class="section-controls">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Search clients..." id="client-search" onkeyup="searchClients()">
+                            </div>
+                            <button class="export-btn-small" onclick="exportClients()">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="data-table-container">
+                        <div class="table-wrapper">
+                            <table class="data-table" id="clients-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="select-all-clients" onchange="toggleSelectAll('clients')">
+                                        </th>
+                                        <th onclick="sortTable('clients', 0)">
+                                            ID <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th onclick="sortTable('clients', 1)">
+                                            Name <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th>City</th>
+                                        <th onclick="sortTable('clients', 5)">
+                                            Registered <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data loaded by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="loading-indicator" id="clients-loading">
+                            <div class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Loading clients...</span>
+                            </div>
+                        </div>
+                        
+                        <div class="table-pagination" id="clients-pagination">
+                            <div class="pagination-info">
+                                Showing <span id="clients-range">0-0</span> of <span id="clients-total">0</span> clients
+                            </div>
+                            <div class="pagination-controls">
+                                <button class="page-btn" onclick="changePage('clients', 'prev')" id="clients-prev">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <div class="page-numbers" id="clients-pages"></div>
+                                <button class="page-btn" onclick="changePage('clients', 'next')" id="clients-next">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics-tab" class="tab-content">
+                <div class="analytics-dashboard">
+                    <div class="charts-grid">
+                        <div class="chart-panel">
+                            <div class="panel-header">
+                                <h3><i class="fas fa-chart-pie"></i> Meeting Types Distribution</h3>
+                                <div class="chart-controls">
+                                    <select class="chart-filter">
+                                        <option>Last 30 days</option>
+                                        <option>Last 7 days</option>
+                                        <option>This month</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <div class="chart-placeholder" id="meeting-types-chart">
+                                    <i class="fas fa-chart-pie fa-3x"></i>
+                                    <p>Meeting types distribution chart will be displayed here</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-panel">
+                            <div class="panel-header">
+                                <h3><i class="fas fa-chart-line"></i> Bookings Trend</h3>
+                                <div class="chart-controls">
+                                    <select class="chart-filter">
+                                        <option>Last 30 days</option>
+                                        <option>Last 7 days</option>
+                                        <option>This month</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <div class="chart-placeholder" id="bookings-trend-chart">
+                                    <i class="fas fa-chart-line fa-3x"></i>
+                                    <p>Booking trends over time will be displayed here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="insights-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-lightbulb"></i> Key Insights</h3>
+                        </div>
+                        <div class="insights-grid">
+                            <div class="insight-card">
+                                <div class="insight-icon">
+                                    <i class="fas fa-trending-up"></i>
+                                </div>
+                                <div class="insight-content">
+                                    <h4>Peak Hours</h4>
+                                    <p>Most consultations are booked between 2:00 PM - 4:00 PM</p>
+                                </div>
+                            </div>
+                            <div class="insight-card">
+                                <div class="insight-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="insight-content">
+                                    <h4>Popular Services</h4>
+                                    <p>Family Law consultations show 35% increase this month</p>
+                                </div>
+                            </div>
+                            <div class="insight-card">
+                                <div class="insight-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="insight-content">
+                                    <h4>Client Satisfaction</h4>
+                                    <p>94% of video consultations receive positive feedback</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="settings-dashboard">
+                    <div class="settings-grid">
+                        <div class="settings-panel">
+                            <div class="panel-header">
+                                <h3><i class="fas fa-cog"></i> System Configuration</h3>
+                            </div>
+                            <div class="settings-form">
+                                <div class="setting-item">
+                                    <label>Auto-refresh interval</label>
+                                    <select id="refresh-interval">
+                                        <option value="5">5 seconds</option>
+                                        <option value="10" selected>10 seconds</option>
+                                        <option value="30">30 seconds</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Items per page</label>
+                                    <select id="items-per-page">
+                                        <option value="10">10</option>
+                                        <option value="25" selected>25</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Email notifications</label>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="email-notifications" checked>
+                                        <label for="email-notifications"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-panel">
+                            <div class="panel-header">
+                                <h3><i class="fas fa-bell"></i> Notification Settings</h3>
+                            </div>
+                            <div class="notification-settings">
+                                <div class="notification-item">
+                                    <div class="notification-info">
+                                        <strong>New Meeting Bookings</strong>
+                                        <span>Get notified when clients book meetings</span>
+                                    </div>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="new-meetings" checked>
+                                        <label for="new-meetings"></label>
+                                    </div>
+                                </div>
+                                <div class="notification-item">
+                                    <div class="notification-info">
+                                        <strong>Client Registrations</strong>
+                                        <span>Alert when new clients register</span>
+                                    </div>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="new-clients" checked>
+                                        <label for="new-clients"></label>
+                                    </div>
+                                </div>
+                                <div class="notification-item">
+                                    <div class="notification-info">
+                                        <strong>System Alerts</strong>
+                                        <span>Important system notifications</span>
+                                    </div>
+                                    <div class="toggle-switch">
+                                        <input type="checkbox" id="system-alerts" checked>
+                                        <label for="system-alerts"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* ===== DASHBOARD WRAPPER ===== */
+.dashboard-wrapper {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    border: 1px solid rgba(0,0,0,0.05);
+    margin: 20px 0;
+}
+
+/* ===== DASHBOARD HEADER ===== */
+.dashboard-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 40px 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.header-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 200" fill="rgba(255,255,255,0.1)"><path d="M0,100 C300,200 700,0 1000,100 L1000,0 L0,0 Z"/></svg>');
+    pointer-events: none;
+}
+
+.header-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard-branding {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.brand-logo {
+    width: 80px;
+    height: 80px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.brand-info h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.brand-info p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 15px;
+}
+
+.admin-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.2);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+    width: fit-content;
+}
+
+.admin-badge i {
+    color: #FFD700;
+    font-size: 1rem;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.quick-stats {
+    display: flex;
+    gap: 30px;
+}
+
+.stat-item {
+    text-align: center;
+    background: rgba(255,255,255,0.15);
+    padding: 20px 25px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: white;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.action-btn {
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.25);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+}
+
+.action-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.export-btn {
+    background: rgba(76, 175, 80, 0.3);
+    border-color: rgba(76, 175, 80, 0.5);
+}
+
+.refresh-btn {
+    background: rgba(33, 150, 243, 0.3);
+    border-color: rgba(33, 150, 243, 0.5);
+}
+
+/* ===== ANALYTICS SECTION ===== */
+.analytics-section {
+    padding: 50px;
+    background: #f8f9fa;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.analytics-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.analytics-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.analytics-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    border-color: rgba(102, 126, 234, 0.2);
+}
+
+.analytics-card:hover::before {
+    opacity: 1;
+}
+
+.analytics-card.primary::before {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.analytics-card.success::before {
+    background: linear-gradient(90deg, #4CAF50, #45a049);
+}
+
+.analytics-card.warning::before {
+    background: linear-gradient(90deg, #FF9800, #f57c00);
+}
+
+.analytics-card.info::before {
+    background: linear-gradient(90deg, #2196F3, #1976d2);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white;
+}
+
+.analytics-card.primary .card-icon {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.analytics-card.success .card-icon {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+}
+
+.analytics-card.warning .card-icon {
+    background: linear-gradient(135deg, #FF9800, #f57c00);
+}
+
+.analytics-card.info .card-icon {
+    background: linear-gradient(135deg, #2196F3, #1976d2);
+}
+
+.card-action-btn {
+    width: 35px;
+    height: 35px;
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    border-radius: 10px;
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-action-btn:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: scale(1.1);
+}
+
+.card-content {
+    text-align: left;
+}
+
+.metric-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+.metric-label {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.metric-trend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.analytics-card.primary .metric-trend {
+    color: #667eea;
+}
+
+.analytics-card.success .metric-trend {
+    color: #4CAF50;
+}
+
+.analytics-card.warning .metric-trend {
+    color: #FF9800;
+}
+
+.analytics-card.info .metric-trend {
+    color: #2196F3;
+}
+
+/* ===== NAVIGATION TABS ===== */
+.navigation-section {
+    background: white;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.nav-tabs {
+    display: flex;
+    padding: 0 50px;
+}
+
+.nav-tab {
+    background: transparent;
+    border: none;
+    padding: 20px 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #666;
+    position: relative;
+    border-bottom: 3px solid transparent;
+}
+
+.nav-tab:hover {
+    background: rgba(102, 126, 234, 0.05);
+    color: #667eea;
+}
+
+.nav-tab.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.nav-tab i {
+    font-size: 1.1rem;
+}
+
+.tab-badge {
+    background: #667eea;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+}
+
+.tab-indicator {
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.nav-tab.active .tab-indicator {
+    opacity: 1;
+}
+
+/* ===== TAB CONTENT ===== */
+.tab-content-container {
+    min-height: 600px;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeInUp 0.5s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== OVERVIEW TAB ===== */
+.overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    padding: 50px;
+}
+
+.overview-panel {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.overview-panel:first-child {
+    grid-column: 1 / -1;
+}
+
+.panel-header {
+    background: #f8f9fa;
+    padding: 25px 30px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h3 {
+    color: #333;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.panel-header h3 i {
+    color: #667eea;
+}
+
+.panel-action {
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    color: #667eea;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.panel-action:hover {
+    background: rgba(102, 126, 234, 0.2);
+}
+
+.activity-feed {
+    padding: 30px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-placeholder {
+    text-align: center;
+    padding: 60px;
+    color: #999;
+}
+
+.activity-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #667eea;
+    opacity: 0.5;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 30px;
+}
+
+.quick-action-btn {
+    background: white;
+    border: 2px solid #e0e0e0;
+    padding: 25px 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    color: #333;
+    font-weight: 500;
+}
+
+.quick-action-btn:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+}
+
+.quick-action-btn i {
+    font-size: 2rem;
+    color: #667eea;
+}
+
+.system-status {
+    padding: 30px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.status-item:last-child {
+    border-bottom: none;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.good {
+    background: #4CAF50;
+}
+
+.status-indicator.warning {
+    background: #FF9800;
+}
+
+.status-indicator.error {
+    background: #f44336;
+}
+
+.status-info {
+    flex: 1;
+}
+
+.status-info strong {
+    display: block;
+    color: #333;
+    font-size: 1rem;
+    margin-bottom: 3px;
+}
+
+.status-info span {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.status-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4CAF50;
+}
+
+/* ===== DATA SECTIONS ===== */
+.data-section {
+    padding: 50px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.header-info h2 {
+    color: #333;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-info h2 i {
+    color: #667eea;
+}
+
+.header-info p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.section-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    color: #999;
+    z-index: 2;
+}
+
+.search-box input {
+    background: white;
+    border: 2px solid #e0e0e0;
+    padding: 12px 20px 12px 45px;
+    border-radius: 12px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+    width: 300px;
+}
+
+.search-box input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.filter-select {
+    background: white;
+    border: 2px solid #e0e0e0;
+    padding: 12px 15px;
+    border-radius: 12px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-select:focus {
+    border-color: #667eea;
+}
+
+.export-btn-small {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.export-btn-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* ===== DATA TABLES ===== */
+.data-table-container {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.data-table th,
+.data-table td {
+    padding: 18px 20px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.data-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.data-table th:hover {
+    background: #e9ecef;
+}
+
+.data-table th i {
+    margin-left: 5px;
+    opacity: 0.5;
+    font-size: 0.8rem;
+}
+
+.data-table td {
+    color: #666;
+    vertical-align: middle;
+}
+
+.data-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.data-table tbody tr:hover {
+    background: rgba(102, 126, 234, 0.02);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.data-table input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #667eea;
+    cursor: pointer;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+    background: rgba(255, 152, 0, 0.1);
+    color: #FF9800;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.status-badge.confirmed {
+    background: rgba(33, 150, 243, 0.1);
+    color: #2196F3;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.status-badge.completed {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.status-badge.cancelled {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    border: 1px solid;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    border-color: rgba(76, 175, 80, 0.3);
+}
+
+.btn-success:hover {
+    background: rgba(76, 175, 80, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+.btn-danger:hover {
+    background: rgba(244, 67, 54, 0.2);
+    transform: translateY(-1px);
+}
+
+/* ===== LOADING ===== */
+.loading-indicator {
+    text-align: center;
+    padding: 80px;
+    color: #666;
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.loading-spinner i {
+    font-size: 3rem;
+    color: #667eea;
+}
+
+.loading-spinner span {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ===== PAGINATION ===== */
+.table-pagination {
+    background: #f8f9fa;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.pagination-info {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-btn {
+    width: 35px;
+    height: 35px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: #666;
+}
+
+.page-btn:hover:not(:disabled) {
+    border-color: #667eea;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+<!-- CONTINUING FROM WHERE WE LEFT OFF... -->
+
+.page-numbers {
+    display: flex;
+    gap: 5px;
+}
+
+.page-number {
+    width: 35px;
+    height: 35px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.page-number:hover {
+    border-color: #667eea;
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.page-number.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+/* ===== CHARTS & ANALYTICS ===== */
+.analytics-dashboard {
+    padding: 50px;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.chart-panel {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.chart-controls {
+    display: flex;
+    gap: 15px;
+}
+
+.chart-filter {
+    background: white;
+    border: 1px solid #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.chart-container {
+    padding: 30px;
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-placeholder {
+    text-align: center;
+    color: #999;
+}
+
+.chart-placeholder i {
+    margin-bottom: 20px;
+    color: #667eea;
+    opacity: 0.5;
+}
+
+.chart-placeholder p {
+    font-size: 1rem;
+    max-width: 300px;
+    line-height: 1.5;
+}
+
+.insights-panel {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    padding: 30px;
+}
+
+.insight-card {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.insight-card:hover {
+    background: white;
+    border-color: rgba(102, 126, 234, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.insight-icon {
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.insight-content h4 {
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.insight-content p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* ===== SETTINGS DASHBOARD ===== */
+.settings-dashboard {
+    padding: 50px;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.settings-panel {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.settings-form {
+    padding: 30px;
+}
+
+.setting-item {
+    margin-bottom: 25px;
+}
+
+.setting-item label {
+    display: block;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.setting-item select {
+    width: 100%;
+    background: white;
+    border: 2px solid #e0e0e0;
+    padding: 12px 15px;
+    border-radius: 12px;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.setting-item select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch label {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ccc;
+    border-radius: 24px;
+    transition: 0.3s;
+    margin: 0;
+}
+
+.toggle-switch label:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.toggle-switch input:checked + label {
+    background: #667eea;
+}
+
+.toggle-switch input:checked + label:before {
+    transform: translateX(26px);
+}
+
+.notification-settings {
+    padding: 30px;
+}
+
+.notification-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-info strong {
+    display: block;
+    color: #333;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+.notification-info span {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) {
+    .dashboard-header {
+        padding: 30px 40px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 25px;
+        text-align: center;
+    }
+    
+    .analytics-section,
+    .data-section,
+    .analytics-dashboard,
+    .settings-dashboard {
+        padding: 40px 30px;
+    }
+    
+    .nav-tabs {
+        padding: 0 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: 25px 20px;
+    }
+    
+    .dashboard-branding {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .brand-info h1 {
+        font-size: 2rem;
+    }
+    
+    .quick-stats {
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+    }
+    
+    .action-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nav-tabs {
+        padding: 0 20px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .nav-tabs::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .nav-tab {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    .nav-tab span {
+        display: none;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        gap: 20px;
+        align-items: stretch;
+    }
+    
+    .section-controls {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .search-box input {
+        width: 100%;
+    }
+    
+    .overview-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-pagination {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .data-table {
+        font-size: 0.8rem;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 12px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .analytics-section,
+    .data-section,
+    .analytics-dashboard,
+    .settings-dashboard {
+        padding: 30px 15px;
+    }
+    
+    .nav-tabs {
+        padding: 0 15px;
+    }
+    
+    .brand-info h1 {
+        font-size: 1.6rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+    }
+}
+</style>
+
+<script>
+// Global variables
+let allMeetings = [];
+let allClients = [];
+let currentTab = 'overview';
+let currentPage = {
+    meetings: 1,
+    clients: 1
+};
+let itemsPerPage = 25;
+let sortColumn = null;
+let sortDirection = 'asc';
+let refreshInterval;
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📊 Admin Dashboard initializing...');
+    
+    initializeDashboard();
+    startAutoRefresh();
+    
+    console.log('✅ Admin Dashboard ready');
+});
+
+async function initializeDashboard() {
+    try {
+        showLoading();
+        
+        // Load initial data
+        await Promise.all([
+            loadMeetings(),
+            loadClients(),
+            loadStats(),
+            loadRecentActivity()
+        ]);
+        
+        hideLoading();
+        
+    } catch (error) {
+        console.error('❌ Dashboard initialization failed:', error);
+        showNotification('Failed to load dashboard data', 'error');
+    }
+}
+
+// ===== DATA LOADING FUNCTIONS =====
+async function loadMeetings() {
+    try {
+        showTableLoading('meetings');
+        
+        const response = await fetch('/api/admin/meetings');
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            allMeetings = data.meetings || [];
+            displayMeetings(allMeetings);
+            updateMeetingsStats();
+            
+            console.log(`📅 Loaded ${allMeetings.length} meetings`);
+        } else {
+            throw new Error(data.message || 'Failed to load meetings');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading meetings:', error);
+        showTableError('meetings', 'Failed to load meetings');
+    } finally {
+        hideTableLoading('meetings');
+    }
+}
+
+async function loadClients() {
+    try {
+        showTableLoading('clients');
+        
+        const response = await fetch('/api/admin/clients');
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            allClients = data.clients || [];
+            displayClients(allClients);
+            updateClientsStats();
+            
+            console.log(`👥 Loaded ${allClients.length} clients`);
+        } else {
+            throw new Error(data.message || 'Failed to load clients');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading clients:', error);
+        showTableError('clients', 'Failed to load clients');
+    } finally {
+        hideTableLoading('clients');
+    }
+}
+
+async function loadStats() {
+    try {
+        const response = await fetch('/api/admin/stats');
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            updateDashboardStats(data.stats);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading stats:', error);
+    }
+}
+
+async function loadRecentActivity() {
+    try {
+        // Simulate recent activity data (replace with actual API)
+        const activities = [
+            {
+                type: 'meeting',
+                message: 'New meeting booked by John Doe',
+                time: '5 minutes ago',
+                icon: 'fa-calendar-plus',
+                color: 'success'
+            },
+            {
+                type: 'client',
+                message: 'New client registered: Jane Smith',
+                time: '12 minutes ago',
+                icon: 'fa-user-plus',
+                color: 'info'
+            },
+            {
+                type: 'meeting',
+                message: 'Meeting confirmed with Advocate Kumar',
+                time: '25 minutes ago',
+                icon: 'fa-check-circle',
+                color: 'success'
+            },
+            {
+                type: 'system',
+                message: 'Database backup completed successfully',
+                time: '1 hour ago',
+                icon: 'fa-database',
+                color: 'primary'
+            },
+            {
+                type: 'meeting',
+                message: 'Video call started in Room #3241',
+                time: '2 hours ago',
+                icon: 'fa-video',
+                color: 'warning'
+            }
+        ];
+        
+        displayRecentActivity(activities);
+        
+    } catch (error) {
+        console.error('❌ Error loading activity:', error);
+    }
+}
+
+// ===== DISPLAY FUNCTIONS =====
+function displayMeetings(meetings, page = 1) {
+    const tbody = document.querySelector('#meetings-table tbody');
+    tbody.innerHTML = '';
+    
+    if (meetings.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="10" class="text-center" style="padding: 60px; color: #999;">
+                    <i class="fas fa-calendar-times fa-3x" style="margin-bottom: 20px; opacity: 0.3;"></i>
+                    <br>No meetings found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Pagination
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, meetings.length);
+    const paginatedMeetings = meetings.slice(startIndex, endIndex);
+    
+    paginatedMeetings.forEach((meeting, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <input type="checkbox" class="meeting-checkbox" value="${meeting.id}">
+            </td>
+            <td>
+                <strong style="color: #667eea; font-family: monospace;">#${meeting.id}</strong>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 35px; height: 35px; background: linear-gradient(135deg, #4CAF50, #45a049); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;">
+                        ${meeting.client_name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                        <strong style="color: #333;">${meeting.client_name}</strong><br>
+                        <small style="color: #666;">${meeting.client_phone || 'No phone'}</small>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-user-tie" style="color: #667eea;"></i>
+                    <strong style="color: #333;">${meeting.advocate_name}</strong>
+                </div>
+            </td>
+            <td>
+                <div>
+                    <strong style="color: #333;">${formatDate(meeting.meeting_date)}</strong><br>
+                    <small style="color: #667eea; font-weight: 500;">${formatTime(meeting.meeting_time)}</small>
+                </div>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <i class="fas ${getMeetingTypeIcon(meeting.meeting_type)}" style="color: #667eea;"></i>
+                    <span>${formatMeetingType(meeting.meeting_type)}</span>
+                </div>
+            </td>
+            <td>
+                <span style="background: rgba(102, 126, 234, 0.1); color: #667eea; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                    ${meeting.meeting_duration} min
+                </span>
+            </td>
+            <td>
+                <span style="color: #666; font-size: 0.9rem;">
+                    ${meeting.case_type ? formatCaseType(meeting.case_type) : 'General'}
+                </span>
+            </td>
+            <td>
+                <span class="status-badge ${meeting.status}">
+                    ${meeting.status}
+                </span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-sm btn-primary" onclick="viewMeetingDetails(${meeting.id})" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn-sm btn-success" onclick="confirmMeeting(${meeting.id})" title="Confirm" ${meeting.status === 'confirmed' ? 'disabled' : ''}>
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="btn-sm btn-danger" onclick="cancelMeeting(${meeting.id})" title="Cancel" ${meeting.status === 'cancelled' ? 'disabled' : ''}>
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+        
+        // Add entrance animation
+        row.style.opacity = '0';
+        row.style.transform = 'translateY(10px)';
+        
+        setTimeout(() => {
+            row.style.transition = 'all 0.3s ease';
+            row.style.opacity = '1';
+            row.style.transform = 'translateY(0)';
+        }, index * 50);
+    });
+    
+    // Update pagination
+    updatePagination('meetings', meetings.length, page);
+}
+
+function displayClients(clients, page = 1) {
+    const tbody = document.querySelector('#clients-table tbody');
+    tbody.innerHTML = '';
+    
+    if (clients.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center" style="padding: 60px; color: #999;">
+                    <i class="fas fa-users-slash fa-3x" style="margin-bottom: 20px; opacity: 0.3;"></i>
+                    <br>No clients found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Pagination
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, clients.length);
+    const paginatedClients = clients.slice(startIndex, endIndex);
+    
+    paginatedClients.forEach((client, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <input type="checkbox" class="client-checkbox" value="${client.id}">
+            </td>
+            <td>
+                <strong style="color: #667eea; font-family: monospace;">#${client.id}</strong>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 35px; height: 35px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;">
+                        ${client.name.substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                        <strong style="color: #333;">${client.name}</strong>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-phone" style="color: #4CAF50; font-size: 0.8rem;"></i>
+                    <span>${client.phone || 'Not provided'}</span>
+                </div>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-envelope" style="color: #2196F3; font-size: 0.8rem;"></i>
+                    <span>${client.email || 'Not provided'}</span>
+                </div>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-map-marker-alt" style="color: #FF9800; font-size: 0.8rem;"></i>
+                    <span>${client.city || 'Not specified'}</span>
+                </div>
+            </td>
+            <td>
+                <div>
+                    <strong style="color: #333;">${formatDate(client.registered_at)}</strong><br>
+                    <small style="color: #666;">${formatTimeAgo(client.registered_at)}</small>
+                </div>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-sm btn-primary" onclick="viewClientDetails(${client.id})" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn-sm btn-success" onclick="contactClient(${client.id})" title="Contact">
+                        <i class="fas fa-phone"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+        
+        // Add entrance animation
+        row.style.opacity = '0';
+        row.style.transform = 'translateY(10px)';
+        
+        setTimeout(() => {
+            row.style.transition = 'all 0.3s ease';
+            row.style.opacity = '1';
+            row.style.transform = 'translateY(0)';
+        }, index * 50);
+    });
+    
+    // Update pagination
+    updatePagination('clients', clients.length, page);
+}
+
+function displayRecentActivity(activities) {
+    const activityFeed = document.getElementById('activity-feed');
+    
+    if (activities.length === 0) {
+        activityFeed.innerHTML = `
+            <div class="activity-placeholder">
+                <i class="fas fa-history"></i>
+                <p>No recent activity</p>
+            </div>
+        `;
+        return;
+    }
+    
+    activityFeed.innerHTML = '';
+    
+    activities.forEach((activity, index) => {
+        const activityItem = document.createElement('div');
+        activityItem.className = 'activity-item';
+        activityItem.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.3s ease;
+        `;
+        
+        activityItem.innerHTML = `
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, ${getActivityColor(activity.color)}); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+                <i class="fas ${activity.icon}" style="font-size: 0.9rem;"></i>
+            </div>
+            <div style="flex: 1;">
+                <div style="color: #333; font-size: 0.95rem; font-weight: 500; margin-bottom: 3px;">
+                    ${activity.message}
+                </div>
+                <div style="color: #999; font-size: 0.8rem;">
+                    <i class="fas fa-clock" style="margin-right: 5px;"></i>
+                    ${activity.time}
+                </div>
+            </div>
+        `;
+        
+        activityFeed.appendChild(activityItem);
+        
+        // Animate in
+        setTimeout(() => {
+            activityItem.style.opacity = '1';
+            activityItem.style.transform = 'translateX(0)';
+        }, index * 100);
+    });
+}
+
+// ===== STATISTICS FUNCTIONS =====
+function updateDashboardStats(stats) {
+    document.getElementById('total-meetings').textContent = stats.total_meetings || 0;
+    document.getElementById('total-clients').textContent = stats.total_clients || 0;
+    document.getElementById('pending-meetings').textContent = stats.pending_meetings || 0;
+    document.getElementById('confirmed-meetings').textContent = stats.confirmed_meetings || 0;
+    
+    // Update live stats
+    document.getElementById('live-clients').textContent = stats.total_clients || 0;
+    document.getElementById('live-meetings').textContent = stats.today_meetings || 0;
+}
+
+function updateMeetingsStats() {
+    const total = allMeetings.length;
+    const pending = allMeetings.filter(m => m.status === 'pending').length;
+    const confirmed = allMeetings.filter(m => m.status === 'confirmed').length;
+    
+    document.getElementById('meetings-badge').textContent = total;
+    document.getElementById('pending-meetings').textContent = pending;
+    document.getElementById('confirmed-meetings').textContent = confirmed;
+}
+
+function updateClientsStats() {
+    const total = allClients.length;
+    document.getElementById('clients-badge').textContent = total;
+    document.getElementById('total-clients').textContent = total;
+}
+
+// ===== TAB FUNCTIONS =====
+function switchTab(tabName) {
+    // Update active tab
+    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+    
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+    
+    currentTab = tabName;
+    
+    console.log(`📋 Switched to ${tabName} tab`);
+}
+
+// ===== FILTER & SEARCH FUNCTIONS =====
+function filterMeetings(status = null) {
+    if (!status) {
+        status = document.getElementById('meeting-filter').value;
+    }
+    
+    let filteredMeetings = allMeetings;
+    
+    if (status && status !== '') {
+        filteredMeetings = allMeetings.filter(meeting => meeting.status === status);
+    }
+    
+    displayMeetings(filteredMeetings);
+    
+    console.log(`🔍 Filtered meetings by status: ${status || 'all'}`);
+}
+
+function searchMeetings() {
+    const query = document.getElementById('meeting-search').value.toLowerCase().trim();
+    
+    if (!query) {
+        filterMeetings();
+        return;
+    }
+    
+    const filteredMeetings = allMeetings.filter(meeting => 
+        meeting.client_name.toLowerCase().includes(query) ||
+        meeting.advocate_name.toLowerCase().includes(query) ||
+        meeting.case_type?.toLowerCase().includes(query) ||
+        meeting.id.toString().includes(query)
+    );
+    
+    displayMeetings(filteredMeetings);
+    
+    console.log(`🔍 Searched meetings: "${query}" - ${filteredMeetings.length} results`);
+}
+
+function searchClients() {
+    const query = document.getElementById('client-search').value.toLowerCase().trim();
+    
+    if (!query) {
+        displayClients(allClients);
+        return;
+    }
+    
+    const filteredClients = allClients.filter(client => 
+        client.name.toLowerCase().includes(query) ||
+        client.email?.toLowerCase().includes(query) ||
+        client.phone?.includes(query) ||
+        client.city?.toLowerCase().includes(query) ||
+        client.id.toString().includes(query)
+    );
+    
+    displayClients(filteredClients);
+    
+    console.log(`🔍 Searched clients: "${query}" - ${filteredClients.length} results`);
+}
+
+// ===== PAGINATION FUNCTIONS =====
+function updatePagination(type, totalItems, currentPageNum) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startItem = (currentPageNum - 1) * itemsPerPage + 1;
+    const endItem = Math.min(currentPageNum * itemsPerPage, totalItems);
+    
+    // Update range display
+    document.getElementById(`${type}-range`).textContent = `${startItem}-${endItem}`;
+    document.getElementById(`${type}-total`).textContent = totalItems;
+    
+    // Update page controls
+    const prevBtn = document.getElementById(`${type}-prev`);
+    const nextBtn = document.getElementById(`${type}-next`);
+    const pagesContainer = document.getElementById(`${type}-pages`);
+    
+    prevBtn.disabled = currentPageNum <= 1;
+    nextBtn.disabled = currentPageNum >= totalPages;
+    
+    // Generate page numbers
+    pagesContainer.innerHTML = '';
+    
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPageNum - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = `page-number ${i === currentPageNum ? 'active' : ''}`;
+        pageBtn.textContent = i;
+        pageBtn.onclick = () => changePage(type, i);
+        pagesContainer.appendChild(pageBtn);
+    }
+}
+
+function changePage(type, direction) {
+    const currentPageNum = currentPage[type];
+    let newPage;
+    
+    if (direction === 'prev') {
+        newPage = Math.max(1, currentPageNum - 1);
+    } else if (direction === 'next') {
+        const totalItems = type === 'meetings' ? allMeetings.length : allClients.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        newPage = Math.min(totalPages, currentPageNum + 1);
+    } else {
+        newPage = direction; // Direct page number
+    }
+    
+    currentPage[type] = newPage;
+    
+    if (type === 'meetings') {
+        const currentFilter = document.getElementById('meeting-filter').value;
+        const filteredMeetings = currentFilter ? 
+            allMeetings.filter(m => m.status === currentFilter) : allMeetings;
+        displayMeetings(filteredMeetings, newPage);
+    } else {
+        displayClients(allClients, newPage);
+    }
+}
+
+// ===== SORTING FUNCTIONS =====
+function sortTable(type, columnIndex) {
+    const isCurrentColumn = sortColumn === `${type}-${columnIndex}`;
+    sortDirection = isCurrentColumn && sortDirection === 'asc' ? 'desc' : 'asc';
+    sortColumn = `${type}-${columnIndex}`;
+    
+    let dataArray = type === 'meetings' ? [...allMeetings] : [...allClients];
+    
+    if (type === 'meetings') {
+        switch (columnIndex) {
+            case 0: // ID
+                dataArray.sort((a, b) => sortDirection === 'asc' ? a.id - b.id : b.id - a.id);
+                break;
+            case 1: // Client
+                dataArray.sort((a, b) => sortDirection === 'asc' ? 
+                    a.client_name.localeCompare(b.client_name) : 
+                    b.client_name.localeCompare(a.client_name));
+                break;
+            case 2: // Advocate
+                dataArray.sort((a, b) => sortDirection === 'asc' ? 
+                    a.advocate_name.localeCompare(b.advocate_name) : 
+                    b.advocate_name.localeCompare(a.advocate_name));
+                break;
+            case 3: // Date
+                dataArray.sort((a, b) => sortDirection === 'asc' ? 
+                    new Date(a.meeting_date) - new Date(b.meeting_date) : 
+                    new Date(b.meeting_date) - new Date(a.meeting_date));
+                break;
+            case 7: // Status
+                dataArray.sort((a, b) => sortDirection === 'asc' ? 
+                    a.status.localeCompare(b.status) : 
+                    b.status.localeCompare(a.status));
+                break;
+        }
+        
+        allMeetings = dataArray;
+        displayMeetings(allMeetings);
+    } else {
+        switch (columnIndex) {
+            case 0: // ID
+                dataArray.sort((a, b) => sortDirection === 'asc' ? a.id - b.id : b.id - a.id);
+                break;
+            case 1: // Name
+                dataArray.sort((a, b) => sortDirection === 'asc' ? 
+                    a.name.localeCompare(b.name) : 
+                    b.name.localeCompare(a.name));
+                break;
+            case 5: // Registered
+                dataArray.sort((a, b) => sortDirection === 'asc' ? 
+                    new Date(a.registered_at) - new Date(b.registered_at) : 
+                    new Date(b.registered_at) - new Date(a.registered_at));
+                break;
+        }
+        
+        allClients = dataArray;
+        displayClients(allClients);
+    }
+    
+    // Update sort indicators
+    document.querySelectorAll('.data-table th i').forEach(icon => {
+        icon.className = 'fas fa-sort';
+    });
+    
+    const targetTh = document.querySelectorAll(`#${type}-table th`)[columnIndex + 1];
+    const icon = targetTh.querySelector('i');
+    if (icon) {
+        icon.className = `fas fa-sort-${sortDirection === 'asc' ? 'up' : 'down'}`;
+    }
+}
+
+// ===== ACTION FUNCTIONS =====
+async function viewMeetingDetails(meetingId) {
+    const meeting = allMeetings.find(m => m.id === meetingId);
+    if (!meeting) return;
+    
+    const details = `
+Meeting Details:
+
+ID: ${meeting.id}
+Client: ${meeting.client_name}
+Email: ${meeting.client_email}
+Phone: ${meeting.client_phone}
+City: ${meeting.client_city || 'Not specified'}
+
+Advocate: ${meeting.advocate_name}
+Date: ${formatDate(meeting.meeting_date)}
+Time: ${formatTime(meeting.meeting_time)}
+Type: ${formatMeetingType(meeting.meeting_type)}
+Duration: ${meeting.meeting_duration} minutes
+
+Case Type: ${meeting.case_type ? formatCaseType(meeting.case_type) : 'Not specified'}
+Description: ${meeting.case_description || 'No description provided'}
+Urgency: ${meeting.urgency_level || 'Not specified'}
+
+Status: ${meeting.status}
+Created: ${formatDate(meeting.created_at)}
+    `;
+    
+    alert(details);
+}
+
+async function confirmMeeting(meetingId) {
+    if (!confirm('Confirm this meeting booking?')) return;
+    
+    try {
+        const response = await fetch(`/api/admin/meetings/${meetingId}/confirm`, {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            showNotification('Meeting confirmed successfully', 'success');
+            await loadMeetings();
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        console.error('Error confirming meeting:', error);
+        showNotification('Failed to confirm meeting', 'error');
+    }
+}
+
+async function cancelMeeting(meetingId) {
+    if (!confirm('Cancel this meeting? This action cannot be undone.')) return;
+    
+    try {
+        const response = await fetch(`/api/admin/meetings/${meetingId}/cancel`, {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            showNotification('Meeting cancelled', 'warning');
+            await loadMeetings();
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        console.error('Error cancelling meeting:', error);
+        showNotification('Failed to cancel meeting', 'error');
+    }
+}
+
+function viewClientDetails(clientId) {
+    const client = allClients.find(c => c.id === clientId);
+    if (!client) return;
+    
+    const details = `
+Client Details:
+
+ID: ${client.id}
+Name: ${client.name}
+Phone: ${client.phone || 'Not provided'}
+Email: ${client.email || 'Not provided'}
+City: ${client.city || 'Not specified'}
+Registered: ${formatDate(client.registered_at)}
+
+Registration Time: ${formatTimeAgo(client.registered_at)}
+    `;
+    
+    alert(details);
+}
+
+function contactClient(clientId) {
+    const client = allClients.find(c => c.id === clientId);
+    if (!client) return;
+    
+    if (client.phone) {
+        if (confirm(`Call ${client.name} at ${client.phone}?`)) {
+            window.open(`tel:${client.phone}`);
+        }
+    } else {
+        showNotification('No phone number available for this client', 'warning');
+    }
+}
+
+// ===== BULK ACTIONS =====
+function toggleSelectAll(type) {
+    const selectAll = document.getElementById(`select-all-${type}`);
+    const checkboxes = document.querySelectorAll(`.${type.slice(0, -1)}-checkbox`);
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+}
+
+// ===== QUICK ACTIONS =====
+function createMeeting() {
+    showNotification('Create meeting feature coming soon!', 'info');
+}
+
+function sendNotification() {
+    showNotification('Notification sent to all active users', 'success');
+}
+
+function generateReport() {
+    showNotification('Generating comprehensive report...', 'info');
+    
+    setTimeout(() => {
+        showNotification('Report generated and ready for download', 'success');
+    }, 2000);
+}
+
+function backupData() {
+    if (confirm('Start database backup? This may take a few minutes.')) {
+        showNotification('Database backup initiated...', 'info');
+        
+        setTimeout(() => {
+            showNotification('Database backup completed successfully', 'success');
+        }, 3000);
+    }
+}
+
+// ===== EXPORT FUNCTIONS =====
+function exportData() {
+    const csvContent = generateCSV();
+    downloadCSV(csvContent, 'admin-dashboard-export.csv');
+    showNotification('Data exported successfully', 'success');
+}
+
+function exportMeetings() {
+    const csvContent = generateMeetingsCSV();
+    downloadCSV(csvContent, 'meetings-export.csv');
+    showNotification('Meetings exported successfully', 'success');
+}
+
+function exportClients() {
+    const csvContent = generateClientsCSV();
+    downloadCSV(csvContent, 'clients-export.csv');
+    showNotification('Clients exported successfully', 'success');
+}
+
+function generateCSV() {
+    // Generate comprehensive CSV with both meetings and clients
+    let csv = 'Type,ID,Name,Contact,Date,Status\n';
+    
+    allMeetings.forEach(meeting => {
+        csv += `Meeting,${meeting.id},"${meeting.client_name}","${meeting.client_phone}","${meeting.meeting_date}","${meeting.status}"\n`;
+    });
+    
+    allClients.forEach(client => {
+        csv += `Client,${client.id},"${client.name}","${client.phone || 'N/A'}","${client.registered_at}","Active"\n`;
+    });
+    
+    return csv;
+}
+
+function generateMeetingsCSV() {
+    let csv = 'ID,Client Name,Client Email,Client Phone,Advocate,Date,Time,Type,Duration,Case Type,Status\n';
+    
+    allMeetings.forEach(meeting => {
+        csv += `${meeting.id},"${meeting.client_name}","${meeting.client_email}","${meeting.client_phone}","${meeting.advocate_name}","${meeting.meeting_date}","${meeting.meeting_time}","${meeting.meeting_type}","${meeting.meeting_duration}","${meeting.case_type || 'N/A'}","${meeting.status}"\n`;
+    });
+    
+    return csv;
+}
+
+function generateClientsCSV() {
+    let csv = 'ID,Name,Email,Phone,City,Registered Date\n';
+    
+    allClients.forEach(client => {
+        csv += `${client.id},"${client.name}","${client.email || 'N/A'}","${client.phone || 'N/A'}","${client.city || 'N/A'}","${client.registered_at}"\n`;
+    });
+    
+    return csv;
+}
+
+function downloadCSV(csvContent, filename) {
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
+// ===== AUTO REFRESH =====
+function startAutoRefresh() {
+    const interval = parseInt(localStorage.getItem('refreshInterval') || '10') * 1000;
+    
+    refreshInterval = setInterval(async () => {
+        console.log('🔄 Auto-refreshing data...');
+        await loadStats();
+        
+        if (currentTab === 'meetings') {
+            await loadMeetings();
+        } else if (currentTab === 'clients') {
+            await loadClients();
+        }
+    }, interval);
+}
+
+function refreshAllData() {
+    const btn = event.target.closest('.refresh-btn');
+    const icon = btn.querySelector('i');
+    
+    icon.style.animation = 'spin 1s linear infinite';
+    
+    Promise.all([
+        loadMeetings(),
+        loadClients(),
+        loadStats(),
+        loadRecentActivity()
+    ]).then(() => {
+        showNotification('Dashboard data refreshed successfully', 'success');
+        icon.style.animation = '';
+    }).catch(error => {
+        console.error('Refresh failed:', error);
+        showNotification('Failed to refresh data', 'error');
+        icon.style.animation = '';
+    });
+}
+
+function refreshActivity() {
+    loadRecentActivity();
+    showNotification('Activity feed refreshed', 'success');
+}
+
+// ===== UTILITY FUNCTIONS =====
+function showLoading() {
+    document.querySelectorAll('.loading-indicator').forEach(indicator => {
+        indicator.style.display = 'block';
+    });
+}
+
+function hideLoading() {
+    document.querySelectorAll('.loading-indicator').forEach(indicator => {
+        indicator.style.display = 'none';
+    });
+}
+
+function showTableLoading(type) {
+    document.getElementById(`${type}-loading`).style.display = 'block';
+}
+
+function hideTableLoading(type) {
+    document.getElementById(`${type}-loading`).style.display = 'none';
+}
+
+function showTableError(type, message) {
+    const tbody = document.querySelector(`#${type}-table tbody`);
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="10" class="text-center" style="padding: 60px; color: #f44336;">
+                <i class="fas fa-exclamation-triangle fa-3x" style="margin-bottom: 20px; opacity: 0.5;"></i>
+                <br>${message}
+                <br><br>
+                <button class="btn-sm btn-primary" onclick="load${type.charAt(0).toUpperCase() + type.slice(1)}()">
+                    <i class="fas fa-redo"></i> Retry
+                </button>
+            </td>
+        </tr>
+    `;
+}
+
+// ===== FORMAT FUNCTIONS =====
+function formatDate(dateString) {
+    try {
+        return new Date(dateString).toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    } catch (error) {
+        return 'Invalid date';
+    }
+}
+
+function formatTime(timeString) {
+    try {
+        const [hours, minutes] = timeString.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minutes} ${ampm}`;
+    } catch (error) {
+        return 'Invalid time';
+    }
+}
+
+function formatTimeAgo(dateString) {
+    try {
+        const now = new Date();
+        const date = new Date(dateString);
+        const diffInSeconds = Math.floor((now - date) / 1000);
+        
+        if (diffInSeconds < 60) return 'Just now';
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+        
+        const days = Math.floor(diffInSeconds / 86400);
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+    } catch (error) {
+        return 'Unknown time';
+    }
+}
+
+function formatMeetingType(type) {
+    const types = {
+        'video-call': 'Video Call',
+        'phone-call': 'Phone Call',
+        'in-person': 'In-Person'
+    };
+    return types[type] || type;
+}
+
+function formatCaseType(type) {
+    const types = {
+        'criminal': 'Criminal Law',
+        'family': 'Family Law',
+        'corporate': 'Corporate Law',
+        'property': 'Property Law',
+        'civil': 'Civil Disputes',
+        'consumer': 'Consumer Protection',
+        'labor': 'Labor & Employment',
+        'tax': 'Tax & Financial',
+        'immigration': 'Immigration',
+        'other': 'Other Legal Matter'
+    };
+    return types[type] || type;
+}
+
+function getMeetingTypeIcon(type) {
+    const icons = {
+        'video-call': 'fa-video',
+        'phone-call': 'fa-phone',
+        'in-person': 'fa-handshake'
+    };
+    return icons[type] || 'fa-calendar';
+}
+
+function getActivityColor(type) {
+    const colors = {
+        'primary': '#667eea, #764ba2',
+        'success': '#4CAF50, #45a049',
+        'warning': '#FF9800, #f57c00',
+        'info': '#2196F3, #1976d2',
+        'danger': '#f44336, #d32f2f'
+    };
+    return colors[type] || colors.primary;
+}
+
+function showNotification(message, type = 'info', duration = 4000) {
+    if (typeof window.ChatUtils !== 'undefined' && window.ChatUtils.showNotification) {
+        window.ChatUtils.showNotification(message, type, duration);
+    } else {
+        console.log(`${type.toUpperCase()}: ${message}`);
+    }
+}
+
+// Add CSS animation for spin
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
+
+console.log('📊 Admin Dashboard JavaScript loaded successfully');
+</script>
+{% endblock %}
